@@ -12,4 +12,5 @@ sqlite3 db/pokemon.db <<EOF
 .import --csv --skip 1 csv/pokemon-stats.csv pokemon_stats
 .import --csv --skip 1 csv/types.csv types
 .import --csv --skip 1 csv/pokemon-types.csv pokemon_types
+UPDATE pokemon_types SET secondary_type_id = NULL WHERE secondary_type_id = '';
 EOF
