@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 
-set -euxo pipefail
+set -eux
 
 rm -rf db
 mkdir -p db
