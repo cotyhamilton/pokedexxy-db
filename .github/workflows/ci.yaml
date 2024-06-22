@@ -1,0 +1,23 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build
+        run: ./build.sh
+      - name: Test
+        run: |
+          [ $(sqlite3 db/pokemon.db 'select name from pokemon where generation_id = 1;' | wc -l | xargs) -eq 151 ]
+      - uses: actions/upload-artifact@v4.3.3
+        with:
+          name: db
+          path: db/pokemon.db
+          if-no-files-found: error
