@@ -68,7 +68,7 @@ jobs:
         run: |
           set -eux
 
-          gh release edit $NEXT_VERSION --latest=true
+          gh release edit $NEXT_VERSION --latest=true --prerelease=false
         env:
           GH_TOKEN: ${{ github.token }}
           NEXT_VERSION: ${{ needs.pre-release.outputs.version }}
