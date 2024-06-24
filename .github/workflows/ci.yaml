@@ -17,8 +17,36 @@ jobs:
       - name: Test
         run: |
           [ $(sqlite3 db/pokemon.db 'select name from pokemon where generation_id = 1;' | wc -l | xargs) -eq 151 ]
-      - uses: actions/upload-artifact@v4.3.3
+      - uses: actions/upload-artifact@v4
         with:
           name: db
           path: db/pokemon.db
           if-no-files-found: error
+  pre-release:
+    runs-on: ubuntu-latest
+    needs: build
+    # if: github.ref_name == 'main'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: denoland/setup-deno@v1
+        with:
+          deno-version: v1.x
+      - uses: actions/download-artifact@v4
+        with:
+          name: db
+          path: db
+      - name: Draft Release
+        run: |
+          export CURRENT_VERSION=$(gh release list --limit 1 --json tagName --jq '.[0].tagName')
+
+          tee version.ts <<EOF
+          import { format, increment, parse } from "jsr:@std/semver";
+          console.log(format(increment(parse(Deno.env.get("CURRENT_VERSION")), "prerelease")));
+          EOF
+
+          export NEXT_VERSION=$(deno run --allow-env version.ts)
+
+          gh release create $NEXT_VERSION pokemon.db \
+            --generate-notes \
+            --notes 'Download `pokemon.db` from assets' \
+            --pre-release
