@@ -51,5 +51,5 @@ jobs:
             --generate-notes \
             --notes 'Download `pokemon.db` from assets' \
             --prerelease
-        # env:
-        #   GH_TOKEN: ${{ github.token }}
+        env:
+          GH_TOKEN: ${{ github.token }}
