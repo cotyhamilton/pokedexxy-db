@@ -26,7 +26,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     environment: pre-release
-    # if: github.ref_name == 'main'
+    if: github.ref_name == 'main'
     outputs:
       version: ${{ steps.prerelease.outputs.version }}
     steps:
