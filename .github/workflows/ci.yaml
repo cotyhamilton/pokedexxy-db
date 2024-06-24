@@ -49,4 +49,4 @@ jobs:
           gh release create $NEXT_VERSION pokemon.db \
             --generate-notes \
             --notes 'Download `pokemon.db` from assets' \
-            --pre-release
+            --prerelease
