@@ -25,7 +25,10 @@ jobs:
   pre-release:
     runs-on: ubuntu-latest
     needs: build
+    environment: pre-release
     # if: github.ref_name == 'main'
+    outputs:
+      version: ${{ steps.prerelease.outputs.version }}
     steps:
       - uses: actions/checkout@v4
       - uses: denoland/setup-deno@v1
@@ -35,7 +38,8 @@ jobs:
         with:
           name: db
           path: db
-      - name: Draft Release
+      - id: prerelease
+        name: PreRelease
         run: |
           set -eux
           export CURRENT_VERSION=$(gh release list --limit 1 --json tagName --jq '.[0].tagName')
@@ -46,6 +50,7 @@ jobs:
           EOF
 
           export NEXT_VERSION=$(deno run --allow-env version.ts)
+          echo "VERSION=$NEXT_VERSION" >> "$GITHUB_OUTPUT"
 
           gh release create $NEXT_VERSION db/pokemon.db \
             --generate-notes \
@@ -53,3 +58,17 @@ jobs:
             --prerelease
         env:
           GH_TOKEN: ${{ github.token }}
+  release:
+    runs-on: ubuntu-latest
+    needs: pre-release
+    environment: release
+    steps:
+      - uses: actions/checkout@v4
+      - name: Release
+        run: |
+          set -eux
+
+          gh release edit $NEXT_VERSION --latest=true
+        env:
+          GH_TOKEN: ${{ github.token }}
+          NEXT_VERSION: ${{ needs.pre-release.outputs.version }}
