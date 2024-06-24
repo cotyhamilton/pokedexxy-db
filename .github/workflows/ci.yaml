@@ -46,7 +46,7 @@ jobs:
 
           export NEXT_VERSION=$(deno run --allow-env version.ts)
 
-          gh release create $NEXT_VERSION pokemon.db \
+          gh release create $NEXT_VERSION db/pokemon.db \
             --generate-notes \
             --notes 'Download `pokemon.db` from assets' \
             --prerelease
