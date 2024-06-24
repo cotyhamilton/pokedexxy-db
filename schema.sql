@@ -17,7 +17,7 @@ CREATE TABLE `types` (
 );
 
 CREATE TABLE `pokemon_forms` (
-	`id` integer PRIMARY KEY NOT NULL,
+	`id` text PRIMARY KEY NOT NULL,
 	`name` text NOT NULL,
 	`pokemon_id` text NOT NULL,
 	`form` text,
