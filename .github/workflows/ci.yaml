@@ -37,6 +37,7 @@ jobs:
           path: db
       - name: Draft Release
         run: |
+          set -eux
           export CURRENT_VERSION=$(gh release list --limit 1 --json tagName --jq '.[0].tagName')
 
           tee version.ts <<EOF
@@ -50,3 +51,5 @@ jobs:
             --generate-notes \
             --notes 'Download `pokemon.db` from assets' \
             --prerelease
+        # env:
+        #   GH_TOKEN: ${{ github.token }}
