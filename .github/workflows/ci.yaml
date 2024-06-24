@@ -14,6 +14,8 @@ jobs:
       - uses: actions/checkout@v4
       - name: Build
         run: ./build.sh
+        shell: bash
       - name: Test
         run: |
           [ $(sqlite3 db/pokemon.db 'select name from pokemon where generation_id = 1;' | wc -l | xargs) -eq 151 ]
+        shell: bash

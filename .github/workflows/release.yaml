@@ -10,9 +10,11 @@ jobs:
       - uses: actions/checkout@v4
       - name: Build
         run: ./build.sh
+        shell: bash
       - name: Test
         run: |
           [ $(sqlite3 db/pokemon.db 'select name from pokemon where generation_id = 1;' | wc -l | xargs) -eq 151 ]
+        shell: bash
       - uses: actions/upload-artifact@v4
         with:
           name: db
@@ -40,18 +42,18 @@ jobs:
           set -eux
           export CURRENT_VERSION=$(gh release list --limit 1 --json tagName --jq '.[0].tagName')
 
-          tee version.ts <<EOF
+          NEXT_VERSION=$(deno run --allow-env - <<EOF
           import { format, increment, parse } from "jsr:@std/semver";
           console.log(format(increment(parse(Deno.env.get("CURRENT_VERSION")), "prerelease")));
           EOF
-
-          export NEXT_VERSION=$(deno run --allow-env version.ts)
+          )
           echo "VERSION=$NEXT_VERSION" >> "$GITHUB_OUTPUT"
 
           gh release create $NEXT_VERSION db/pokemon.db \
             --generate-notes \
             --notes 'Download `pokemon.db` from assets' \
             --prerelease
+        shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
   release:
@@ -65,6 +67,7 @@ jobs:
           set -eux
 
           gh release edit $NEXT_VERSION --latest=true --prerelease=false
+        shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
           NEXT_VERSION: ${{ needs.pre-release.outputs.version }}
